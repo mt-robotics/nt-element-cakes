@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="NT Element Cakes — cocoa-dusted tiramisu cakes revealed through an interactive canvas experience." />
+    <title>NT Element Cakes — Dust & Reveal</title>
+  </head>
+  <body>
+    <canvas id="cocoa-canvas" aria-hidden="true"></canvas>
+
+    <div id="app-shell">
+      <header class="site-header reveal-target" data-reveal-zone="header" data-reveal-threshold="0.30">
+        <a class="brand-mark" href="#top" aria-label="NT Element Cakes home">
+          <img src="/logo.png" alt="NT Element Cakes logo" />
+          <span>
+            <strong data-brand-name>NT Element Cakes</strong>
+            <em data-tagline>Pick me up</em>
+          </span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#gallery">Gallery</a>
+          <a href="#about">About</a>
+          <a href="#order">Order via social</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="hero reveal-target" data-reveal-zone="hero" data-reveal-threshold="0.22">
+          <p class="eyebrow">The Cocoa Surface</p>
+          <h1>Brush away the cocoa. Find your next tiramisu.</h1>
+          <p class="hero-copy">Move your cursor or drag your finger to reveal handcrafted tiramisu cakes beneath a dusting of dark cocoa.</p>
+          <button id="reveal-all" class="cream-button" type="button">Reveal the menu</button>
+        </section>
+
+        <section id="gallery" class="gallery" aria-label="Cake gallery">
+          <article class="cake-card reveal-target" data-reveal-zone="cake-1"><img src="/cakes/755380798_1019663917494688_2718437872776743684_n.jpg" alt="Cocoa dusted tiramisu cake by NT Element Cakes" /><div><span>Signature dust</span><h2>Classic cocoa tiramisu</h2></div></article>
+          <article class="cake-card reveal-target" data-reveal-zone="cake-2"><img src="/cakes/754724833_2957078267962681_4754883315427519400_n.jpg" alt="Decorated tiramisu cake close-up" /><div><span>Celebration finish</span><h2>Mascarpone cloud cake</h2></div></article>
+          <article class="cake-card reveal-target" data-reveal-zone="cake-3"><img src="/cakes/753732979_1350799103807430_7873787001468322305_n.jpg" alt="Square tiramisu cake with piped topping" /><div><span>Coffee soaked</span><h2>Espresso layer slice</h2></div></article>
+          <article class="cake-card reveal-target" data-reveal-zone="cake-4"><img src="/cakes/753662785_1084920284200451_1877320936906446710_n.jpg" alt="Tiramisu cake boxed for gifting" /><div><span>Gift-ready</span><h2>Weekend pick-me-up</h2></div></article>
+          <article class="cake-card reveal-target" data-reveal-zone="cake-5"><img src="/cakes/752807170_928127383670878_7984085609858838846_n.jpg" alt="Round tiramisu cake with cocoa top" /><div><span>Small batch</span><h2>Cocoa edge round</h2></div></article>
+          <article class="cake-card reveal-target" data-reveal-zone="cake-6"><img src="/cakes/752150735_1460443102514118_3095273935556678092_n.jpg" alt="Creamy tiramisu dessert detail" /><div><span>Soft centre</span><h2>Velvet mascarpone</h2></div></article>
+        </section>
+
+        <section id="about" class="about-card reveal-target" data-reveal-zone="about" data-reveal-threshold="0.35">
+          <p class="eyebrow">Made in Australia</p>
+          <h2>Layered with coffee, cream, and a little theatre.</h2>
+          <p data-about-text>NT Element Cakes creates small-batch tiramisu cakes with a soft mascarpone heart, deep coffee notes, and cocoa-dusted finishes made for celebrations, gifting, and late-night cravings. Browse the reveal, then message us on social to order.</p>
+        </section>
+      </main>
+
+      <footer id="order" class="social-footer reveal-target" data-reveal-zone="social" data-reveal-threshold="0.28">
+        <span>Ready to order?</span>
+        <a data-social="instagram" href="https://instagram.com/ntelementcakes" rel="noreferrer" target="_blank" aria-label="Order on Instagram">◎ Instagram</a>
+        <a data-social="facebook" href="https://facebook.com/ntelementcakes" rel="noreferrer" target="_blank" aria-label="Visit Facebook">f Facebook</a>
+        <a data-social="messenger" href="https://m.me/ntelementcakes" rel="noreferrer" target="_blank" aria-label="Message NT Element Cakes">✦ Messenger</a>
+      </footer>
+    </div>
+
+    <div class="cursor-orb" aria-hidden="true"></div>
+    <div id="loading-note">Dusting the cocoa surface…</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
