@@ -99,7 +99,10 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
   });
   window.addEventListener('pointerup', () => (dragging = false));
 
-  window.addEventListener('click', () => {
+  window.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    if (target && target.closest('button, a, .cake-card, .copy-panel, .gallery')) return;
+
     raycaster.setFromCamera(pointer, rig.camera);
     const beanHit = raycaster.intersectObjects(beanMeshes(), false)[0];
     if (beanHit) {
@@ -114,13 +117,13 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
   const update = (delta: number) => {
     raycaster.setFromCamera(targetPointer, rig.camera);
     if (raycaster.ray.intersectPlane(plane, hit)) {
-      hit.x = THREE.MathUtils.clamp(hit.x, -2.1, 2.1);
-      hit.z = THREE.MathUtils.clamp(hit.z, -0.9, 2.15);
-      tiramisu.spoon.position.lerp(hit, 0.18);
+      hit.x = THREE.MathUtils.clamp(hit.x, -3.4, 3.4);
+      hit.z = THREE.MathUtils.clamp(hit.z, -2.6, 3.4);
+      tiramisu.spoon.position.lerp(hit, 0.55);
       const dx = tiramisu.spoon.position.x - previous.x;
       const dz = tiramisu.spoon.position.z - previous.z;
-      tiramisu.spoon.rotation.z = THREE.MathUtils.lerp(tiramisu.spoon.rotation.z, 0.35 - dx * 2.2, 0.18);
-      tiramisu.spoon.rotation.x = THREE.MathUtils.lerp(tiramisu.spoon.rotation.x, -0.85 + dz * 1.8, 0.18);
+      tiramisu.spoon.rotation.z = THREE.MathUtils.lerp(tiramisu.spoon.rotation.z, 0.35 - dx * 1.4, 0.4);
+      tiramisu.spoon.rotation.x = THREE.MathUtils.lerp(tiramisu.spoon.rotation.x, -0.85 + dz * 1.1, 0.4);
       previous.copy(tiramisu.spoon.position);
     }
 
