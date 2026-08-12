@@ -51,10 +51,22 @@ export function initLayerScroll(): void {
 
   const mm = gsap.matchMedia();
 
+  const setActiveLayer = (progress: number) => {
+    const activeSelector =
+      progress < 0.27 ? '.hero-layer' :
+      progress < 0.58 ? '.about-layer' :
+      progress < 0.9 ? '.gallery-layer' :
+      '.social-layer';
+    layers.forEach((layer) => {
+      layer.classList.toggle('is-active', layer.matches(activeSelector));
+    });
+  };
+
   mm.add('(prefers-reduced-motion: reduce)', () => {
     layers.forEach((layer) => {
       const depth = Number(layer.dataset.depth || 0);
       gsap.set(layer, { z: depth, clearProps: 'rotateX,y,scale' });
+      layer.classList.add('is-active');
     });
   });
 
@@ -80,9 +92,12 @@ export function initLayerScroll(): void {
         onUpdate: (self) => {
           if (progressBar) progressBar.style.transform = `scaleX(${self.progress})`;
           document.documentElement.style.setProperty('--scroll-lift', self.progress.toFixed(3));
+          setActiveLayer(self.progress);
         }
       }
     });
+
+    setActiveLayer(0);
 
     timeline
       .to('.hero-layer', { yPercent: -118, rotateX: -7, z: 105, scale: 0.94, duration: 1.15 }, 0)

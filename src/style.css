@@ -48,7 +48,8 @@ img { display: block; max-width: 100%; }
   top: 18px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 50;
+  z-index: 1000;
+  pointer-events: auto;
   width: min(1120px, calc(100% - 28px));
   display: flex;
   justify-content: space-between;
@@ -99,6 +100,11 @@ img { display: block; max-width: 100%; }
   box-shadow: var(--shadow-hard), inset 0 1px 0 rgba(255,255,255,0.42);
   backface-visibility: hidden;
   will-change: transform;
+  pointer-events: none;
+}
+.stratum.is-active {
+  pointer-events: auto;
+  z-index: 20;
 }
 .stratum::before,
 .stratum::after {
@@ -293,5 +299,5 @@ p { font-size: clamp(1rem, 1.35vw, 1.25rem); line-height: 1.65; }
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
   .experience { height: auto; min-height: auto; perspective: none; }
   .camera, .stratum { position: relative; min-height: auto; transform: none !important; }
-  .stratum { margin: 12px; inset: auto; }
+  .stratum { margin: 12px; inset: auto; pointer-events: auto; }
 }
