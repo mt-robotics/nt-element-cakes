@@ -74,6 +74,12 @@ export class CocoaReveal {
     this.texture = this.createCocoaTexture(w, h);
     this.ctx.globalCompositeOperation = 'source-over';
     this.ctx.drawImage(this.texture, 0, 0);
+    // Preserve already-revealed zones across resize so the wipe is not lost.
+    this.zones.forEach((zone) => {
+      if (!zone.revealed) return;
+      const rect = zone.element.getBoundingClientRect();
+      this.eraseRect(rect);
+    });
   };
 
   private playLoadingDust(): void {
@@ -170,19 +176,28 @@ export class CocoaReveal {
     this.ctx.restore();
   }
 
+  private eraseRect(rect: DOMRect): void {
+    const x = Math.max(0, rect.left * this.dpr);
+    const y = Math.max(0, rect.top * this.dpr);
+    const w = Math.min(this.canvas.width - x, rect.width * this.dpr);
+    const h = Math.min(this.canvas.height - y, rect.height * this.dpr);
+    if (w <= 0 || h <= 0) return;
+    this.ctx.save();
+    this.ctx.globalCompositeOperation = 'destination-out';
+    this.ctx.fillStyle = 'rgba(0,0,0,1)';
+    this.ctx.fillRect(x, y, w, h);
+    this.ctx.restore();
+  }
+
   private checkZones(): void {
-    let revealed = 0;
     this.zones.forEach((zone) => {
-      if (zone.revealed) {
-        revealed += 1;
-        return;
-      }
+      if (zone.revealed) return;
       const rect = zone.element.getBoundingClientRect();
       if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) return;
       const clearRatio = this.sampleClearRatio(rect);
       if (clearRatio >= zone.threshold) this.revealZone(zone);
     });
-    if (revealed >= this.zones.length - 1) document.body.classList.add('is-revealed');
+    if (this.zones.every((zone) => zone.revealed)) document.body.classList.add('is-revealed');
   }
 
   private sampleClearRatio(rect: DOMRect): number {

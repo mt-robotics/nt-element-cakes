@@ -33,7 +33,7 @@ body.is-revealed #cocoa-canvas { opacity: 0; pointer-events: none; transition: o
   width: 100vw;
   height: 100vh;
   touch-action: none;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 #app-shell {
@@ -70,7 +70,8 @@ body.is-revealed #cocoa-canvas { opacity: 0; pointer-events: none; transition: o
 .brand-mark em { color: var(--color-coffee); font-size: .75rem; margin-top: .2rem; font-style: normal; }
 
 .nav-links { display: flex; gap: .35rem; flex-wrap: wrap; justify-content: flex-end; }
-.nav-links a, .social-footer a, .cream-button {
+.nav-links a, .social-footer a, .cream-button, .brand-mark {
+  cursor: pointer;
   color: var(--color-espresso);
   text-decoration: none;
   border: 1px solid rgba(60, 36, 21, .16);
@@ -88,7 +89,7 @@ main { width: min(1180px, 100%); margin: 0 auto; }
 h1, h2 { font-family: Georgia, "Times New Roman", serif; line-height: .95; letter-spacing: -.055em; margin: 0; }
 h1 { max-width: 900px; font-size: clamp(3.8rem, 11vw, 9.8rem); }
 .hero-copy { max-width: 620px; margin: 1.35rem 0 1.5rem; color: rgba(44, 24, 16, .78); font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.55; }
-.cream-button { font: inherit; cursor: none; background: var(--color-cocoa); color: var(--color-cream); padding: .95rem 1.25rem; }
+.cream-button { font: inherit; cursor: pointer; background: var(--color-cocoa); color: var(--color-cream); padding: .95rem 1.25rem; }
 
 .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 2vw, 1.5rem); }
 .cake-card {
@@ -127,9 +128,15 @@ h1 { max-width: 900px; font-size: clamp(3.8rem, 11vw, 9.8rem); }
   opacity: 0;
   transform: translateY(24px) scale(.985);
   filter: blur(7px);
+  pointer-events: none;
   transition: opacity .85s ease, transform .85s cubic-bezier(.2,.8,.2,1), filter .85s ease;
 }
-.reveal-target.is-revealed { opacity: 1; transform: translateY(0) scale(1); filter: none; }
+.reveal-target.is-revealed {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: none;
+  pointer-events: auto;
+}
 
 .cursor-orb {
   position: fixed;
