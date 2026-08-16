@@ -163,6 +163,7 @@ h2 { font-size: clamp(2rem, 3.5vw, 3.4rem); max-width: 11ch; }
   inset: 0;
   z-index: 3;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: end;
   gap: 1rem;
   padding: 16vh clamp(16px, 5vw, 70px) clamp(24px, 5vh, 44px);
@@ -198,7 +199,9 @@ h2 { font-size: clamp(2rem, 3.5vw, 3.4rem); max-width: 11ch; }
 .card-arc::-webkit-scrollbar { display: none; }
 
 /* Carousel wrapper: right-edge fade hints at more images; hides at the end. */
-.carousel { position: relative; }
+/* min-width:0 + max-width:100% keep this grid item from ballooning to its
+   content width (the full card row) and blowing the track past the viewport. */
+.carousel { position: relative; min-width: 0; max-width: 100%; }
 .carousel-fade {
   position: absolute;
   top: 0;
