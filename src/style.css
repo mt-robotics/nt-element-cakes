@@ -36,6 +36,14 @@ button, a, .cake-card { cursor: pointer; }
   cursor: none;
 }
 
+/* After crack, the spoon is gone — show a themed tiramisu cursor. */
+body.is-cracked #scene { cursor: auto; }
+body.is-cracked button,
+body.is-cracked a,
+body.is-cracked .cake-card {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9' fill='%23d4ad80' stroke='%232c1810' stroke-width='1.5'/><circle cx='12' cy='12' r='3' fill='%23fff9ef'/></svg>") 12 12, pointer;
+}
+
 .loading {
   position: fixed;
   inset: 0;
@@ -84,8 +92,8 @@ button, a, .cake-card { cursor: pointer; }
 }
 
 .brand-mark {
-  width: clamp(58px, 8vw, 86px);
-  height: clamp(58px, 8vw, 86px);
+  width: clamp(52px, 6vw, 72px);
+  height: clamp(52px, 6vw, 72px);
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -98,16 +106,22 @@ button, a, .cake-card { cursor: pointer; }
 .brand-mark img { width: 78%; height: 78%; object-fit: contain; }
 
 .eyebrow {
-  margin: 0 0 .25rem;
+  margin: 0 0 .2rem;
   color: #e9caa9;
-  letter-spacing: .18em;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  font-size: .72rem;
+  font-size: .62rem;
   font-weight: 700;
 }
 
-h1, h2 { margin: 0; line-height: .96; font-family: Georgia, 'Times New Roman', serif; }
-h1 { font-size: clamp(1.55rem, 3vw, 3.2rem); max-width: 10ch; text-shadow: 0 18px 45px rgba(0,0,0,.38); }
+h1, h2 { margin: 0; line-height: 1; font-family: Georgia, 'Times New Roman', serif; }
+h1 {
+  font-size: clamp(1.05rem, 1.8vw, 1.7rem);
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-shadow: 0 18px 45px rgba(0,0,0,.5);
+}
 h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
 
 .copy-panel {
@@ -119,7 +133,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   padding: 1.25rem;
   border: 1px solid rgba(255, 249, 239, .16);
   border-radius: 28px;
-  background: rgba(44, 24, 16, .42);
+  background: rgba(44, 24, 16, .5);
   backdrop-filter: blur(18px);
   box-shadow: 0 30px 100px rgba(0,0,0,.3);
   transition: opacity .5s ease, transform .5s ease;
@@ -127,7 +141,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
 }
 
 .copy-panel.is-hidden { opacity: 0 !important; transform: translateY(18px); pointer-events: none; }
-.copy-panel p { color: rgba(255, 249, 239, .78); line-height: 1.55; }
+.copy-panel p { color: rgba(255, 249, 239, .85); line-height: 1.55; }
 
 .primary-button, .reset-button {
   border: 0;
@@ -148,16 +162,25 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   z-index: 3;
   display: grid;
   align-content: end;
-  gap: 1.2rem;
-  padding: 18vh clamp(16px, 5vw, 70px) clamp(26px, 5vh, 58px);
+  gap: 1rem;
+  padding: 16vh clamp(16px, 5vw, 70px) clamp(24px, 5vh, 44px);
   pointer-events: none;
   opacity: 0;
   transform: translateY(42px);
   transition: opacity .7s ease, transform .7s ease;
 }
 .gallery.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
-.gallery-copy { max-width: 760px; text-shadow: 0 12px 42px rgba(0,0,0,.45); }
-.gallery-copy p:last-child { max-width: 580px; color: rgba(255,249,239,.76); line-height: 1.5; }
+
+/* Scrim behind gallery copy for contrast over the cake. */
+.gallery-copy {
+  max-width: 760px;
+  padding: 1rem 1.4rem;
+  border-radius: 20px;
+  background: rgba(44, 24, 16, .45);
+  backdrop-filter: blur(12px);
+}
+.gallery-copy h2 { text-shadow: 0 12px 42px rgba(0,0,0,.45); }
+.gallery-copy p { max-width: 580px; color: rgba(255,249,239,.85); line-height: 1.5; margin-bottom: 0; }
 
 .card-arc {
   display: flex;
@@ -167,6 +190,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   padding: 1rem .2rem 1.4rem;
   perspective: 1000px;
   scrollbar-width: thin;
+  scroll-behavior: smooth;
 }
 
 .cake-card {
@@ -189,35 +213,84 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   transform-style: preserve-3d;
   transition: box-shadow .2s ease;
 }
-.cake-card:hover .cake-card__inner { box-shadow: 0 30px 100px rgba(255,218,163,.22); }
+.cake-card:hover .cake-card__inner,
+.cake-card:focus-visible .cake-card__inner { box-shadow: 0 30px 100px rgba(255,218,163,.3); }
 .cake-card img { width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(22px) scale(1.04); }
-.cake-card span {
-  position: absolute;
-  left: .8rem;
-  bottom: .8rem;
-  padding: .45rem .65rem;
-  border-radius: 999px;
-  background: rgba(44,24,16,.62);
-  color: #fff9ef;
-  font-size: .75rem;
-  backdrop-filter: blur(10px);
-}
 
-.social-label {
-  position: fixed;
-  left: 50%;
-  bottom: 26px;
-  z-index: 6;
-  transform: translateX(-50%);
-  padding: .7rem 1rem;
-  border-radius: 999px;
-  background: rgba(255,249,239,.1);
-  border: 1px solid rgba(255,249,239,.16);
-  color: rgba(255,249,239,.8);
-  backdrop-filter: blur(16px);
-  opacity: 0;
-  white-space: nowrap;
+/* Social bar */
+.social-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .6rem;
 }
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 249, 239, .18);
+  background: rgba(255, 249, 239, .1);
+  color: var(--color-cream);
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(14px);
+  transition: transform .2s ease, background .2s ease;
+}
+.social-btn:hover { transform: translateY(-3px); background: rgba(255, 249, 239, .2); }
+.social-btn svg { width: 20px; height: 20px; flex: 0 0 auto; }
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 10, 6, .9);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.lightbox.is-open { opacity: 1; pointer-events: auto; }
+.lightbox-img {
+  max-width: 88vw;
+  max-height: 86vh;
+  object-fit: contain;
+  border-radius: 18px;
+  box-shadow: 0 40px 140px rgba(0,0,0,.6);
+}
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,249,239,.25);
+  border-radius: 50%;
+  background: rgba(255,249,239,.12);
+  color: var(--color-cream);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(255,249,239,.25);
+  border-radius: 50%;
+  background: rgba(255,249,239,.12);
+  color: var(--color-cream);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.lightbox-prev { left: 20px; }
+.lightbox-next { right: 20px; }
+
+body.lightbox-open { overflow: hidden; }
 
 .reset-button {
   position: fixed;
@@ -231,10 +304,60 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
 }
 .reset-button.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
+/* ---- Mobile ---- */
 @media (max-width: 760px) {
-  html, body, button, a, .cake-card { cursor: auto; }
-  .brand-shell { align-items: flex-start; }
-  .copy-panel { left: 16px; right: 16px; bottom: 78px; width: auto; }
-  .gallery { padding-top: 22vh; }
-  .social-label { max-width: calc(100vw - 28px); font-size: .82rem; }
+  html, body { cursor: auto; }
+  body.is-cracked #scene { cursor: auto; }
+
+  /* Top row: shrink brand, drop the eyebrow to reduce clutter. */
+  .brand-shell {
+    top: 14px;
+    left: 14px;
+    gap: .6rem;
+    align-items: center;
+  }
+  .brand-mark { width: 46px; height: 46px; }
+  .eyebrow { display: none; }
+  h1 { font-size: 1rem; white-space: nowrap; }
+
+  /* Reset button: smaller, tucked top-right without fighting the brand. */
+  .reset-button {
+    top: 14px;
+    right: 14px;
+    padding: .6rem .9rem;
+    font-size: .8rem;
+  }
+
+  /* Copy panel: full-width bottom sheet with solid backing for contrast. */
+  .copy-panel {
+    left: 14px;
+    right: 14px;
+    bottom: 20px;
+    width: auto;
+    padding: 1rem 1.1rem;
+    border-radius: 22px;
+    background: rgba(44, 24, 16, .78);
+  }
+  .copy-panel .hint { display: none; }
+
+  /* Gallery: roomier top so the heading + cards clear the cake. */
+  .gallery {
+    padding: 12vh 12px 16px;
+    gap: .8rem;
+  }
+  .gallery-copy {
+    padding: .8rem 1rem;
+    max-width: 100%;
+  }
+  .gallery-copy h2 { font-size: 1.8rem; max-width: none; }
+  .gallery-copy p { font-size: .9rem; }
+
+  .cake-card {
+    flex: 0 0 clamp(140px, 44vw, 200px);
+    height: clamp(190px, 52vw, 260px);
+  }
+
+  .social-bar { gap: .45rem; }
+  .social-btn { padding: .55rem .8rem; font-size: .85rem; }
+  .social-btn svg { width: 18px; height: 18px; }
 }

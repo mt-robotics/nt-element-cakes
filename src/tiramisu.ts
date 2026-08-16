@@ -7,17 +7,8 @@ export interface TiramisuModel {
   mascarponeReveal: THREE.Mesh;
   crackWedges: THREE.Group;
   spoon: THREE.Group;
-  coffeeBeans: CoffeeBean[];
   crack: () => THREE.Mesh[];
   reset: () => void;
-}
-
-export interface CoffeeBean {
-  mesh: THREE.Group;
-  platform: string;
-  url: string;
-  baseY: number;
-  index: number;
 }
 
 function noiseTexture(size = 128): THREE.CanvasTexture {
@@ -107,7 +98,8 @@ export function createSpoon(): THREE.Group {
   return spoon;
 }
 
-function makeBean(platform: string, url: string, index: number, total: number): CoffeeBean {
+function makeBean(): THREE.Group {
+  // Decorative cocoa beans — no longer clickable social links.
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({ color: '#6F4E37', roughness: 0.55, metalness: 0.02 });
   const bean = new THREE.Mesh(new THREE.SphereGeometry(0.16, 28, 16), material);
@@ -117,15 +109,10 @@ function makeBean(platform: string, url: string, index: number, total: number): 
   groove.rotation.x = Math.PI / 2;
   groove.position.y = 0.045;
   group.add(bean, groove);
-
-  const angle = (index / total) * Math.PI * 2 + 0.55;
-  group.position.set(Math.cos(angle) * 2.6, 0.42 + index * 0.04, Math.sin(angle) * 1.65);
-  group.rotation.set(0.45, angle, -0.2);
-  group.userData.social = { platform, url };
-  return { mesh: group, platform, url, baseY: group.position.y, index };
+  return group;
 }
 
-export function createTiramisu(socials: Array<{ platform: string; url: string }>): TiramisuModel {
+export function createTiramisu(): TiramisuModel {
   const group = new THREE.Group();
 
   const plate = new THREE.Mesh(
@@ -158,8 +145,14 @@ export function createTiramisu(socials: Array<{ platform: string; url: string }>
   for (let i = 0; i < 6; i += 1) crackWedges.add(makeWedge(i, 6, 1.77));
   group.add(crackWedges);
 
-  const beans = socials.map((social, i) => makeBean(social.platform, social.url, i, socials.length));
-  beans.forEach((bean) => group.add(bean.mesh));
+  const beans = [0, 1, 2].map((i) => {
+    const bean = makeBean();
+    const angle = (i / 3) * Math.PI * 2 + 0.55;
+    bean.position.set(Math.cos(angle) * 2.6, 0.42 + i * 0.04, Math.sin(angle) * 1.65);
+    bean.rotation.set(0.45, angle, -0.2);
+    return bean;
+  });
+  beans.forEach((bean) => group.add(bean));
 
   const spoon = createSpoon();
 
@@ -180,5 +173,5 @@ export function createTiramisu(socials: Array<{ platform: string; url: string }>
     group.rotation.set(0, 0, 0);
   };
 
-  return { group, plate, cocoaTop, mascarponeReveal, crackWedges, spoon, coffeeBeans: beans, crack, reset };
+  return { group, plate, cocoaTop, mascarponeReveal, crackWedges, spoon, crack, reset };
 }

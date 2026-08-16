@@ -23,18 +23,22 @@ const log = (name, pass, detail = '') => {
     window.open = function (url, ...rest) { window.__opened.push(String(url)); return orig.call(window, url, ...rest); };
   });
 
-  // Load + loading overlay
   await page.goto(URL, { waitUntil: 'load' });
   await page.waitForSelector('#loading', { state: 'detached', timeout: 6000 }).catch(() => {});
   log('loading overlay dismissed', (await page.locator('#loading').count()) === 0);
   await page.waitForTimeout(800);
 
-  // Canvas + header
   const box = await page.locator('#scene').boundingBox();
   log('3D canvas fullscreen', !!box && box.width >= 1200, box ? `${box.width}x${box.height}` : 'none');
   log('brand header visible', await page.locator('.brand-shell').isVisible());
 
-  // CTA -> crack -> gallery
+  // Brand name single line
+  const brandH = await page.locator('#brand-title').evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { h: r.height, lines: Math.round(r.height / parseFloat(getComputedStyle(el).lineHeight)) };
+  });
+  log('brand title fits one line', brandH.lines <= 1, `height=${Math.round(brandH.h)}px`);
+
   const cta = page.locator('#spoon-cta');
   log('#spoon-cta visible+enabled', (await cta.isVisible()) && (await cta.isEnabled()));
   await cta.click();
@@ -42,40 +46,43 @@ const log = (name, pass, detail = '') => {
   log('gallery interactive after crack',
     (await page.locator('#gallery').evaluate((el) => getComputedStyle(el).pointerEvents)) === 'auto');
 
+  // Social bar present + clickable (3 buttons)
+  const socialBtns = page.locator('.social-bar .social-btn');
+  log('social bar has 3 buttons', (await socialBtns.count()) === 3, `${await socialBtns.count()}`);
+  const socialLabels = await socialBtns.allTextContents();
+  log('social buttons labeled', socialLabels.some((t) => /instagram/i.test(t)) && socialLabels.some((t) => /facebook/i.test(t)) && socialLabels.some((t) => /messenger/i.test(t)), socialLabels.join(','));
+
   // Reset button
   const reset = page.locator('#reset');
   log('reset button clickable', await reset.isVisible()
     && (await reset.evaluate((el) => getComputedStyle(el).pointerEvents)) === 'auto');
 
-  // Cake cards
   log('cake cards rendered', (await page.locator('.cake-card').count()) >= 10, `${await page.locator('.cake-card').count()} cards`);
+
+  // Lightbox: click a card -> lightbox opens -> close
+  await page.locator('.cake-card').first().click();
+  await page.waitForTimeout(500);
+  log('lightbox opens on card click', await page.locator('#lightbox').evaluate((el) => el.classList.contains('is-open')));
+  const lbImg = page.locator('.lightbox-img');
+  log('lightbox shows image', (await lbImg.getAttribute('src'))?.includes('/cakes/') || false);
+  await page.locator('.lightbox-close').click();
+  await page.waitForTimeout(300);
+  log('lightbox closes', await page.locator('#lightbox').evaluate((el) => !el.classList.contains('is-open')));
+
+  // Social bar opens correct URLs (anchors with target=_blank → popup event, not window.open)
+  const popups = [];
+  page.on('popup', (p) => popups.push(p.url()));
+  const socialHrefs = await socialBtns.evaluateAll((els) => els.map((e) => e.href));
+  log('social hrefs wired', socialHrefs.every((h) => h && h !== 'about:blank'), socialHrefs.join(' | '));
+  await socialBtns.first().click();
+  await page.waitForTimeout(500);
+  log('social button opens popup', popups.length >= 1, popups.join(','));
 
   // Reset hides gallery
   await reset.click();
   await page.waitForTimeout(700);
   log('reset hides gallery', parseFloat(await page.locator('#gallery').evaluate((el) => getComputedStyle(el).opacity)) < 0.5);
 
-  // Social coffee beans — locate via the hover label signal, then click
-  let found = [];
-  for (let gx = 0.02; gx <= 0.98 && found.length < 3; gx += 0.015) {
-    for (let gy = 0.02; gy <= 0.98 && found.length < 3; gy += 0.015) {
-      const sx = box.x + box.width * gx;
-      const sy = box.y + box.height * gy;
-      await page.mouse.move(sx, sy);
-      await page.waitForTimeout(15);
-      const label = await page.locator('#social-label').textContent();
-      if (label && label.includes('tap to order')) {
-        const platform = label.replace(' — tap to order', '').trim();
-        if (!found.includes(platform)) { found.push(platform); await page.mouse.click(sx, sy); await page.waitForTimeout(120); }
-      }
-    }
-  }
-  const opened = await page.evaluate(() => window.__opened || []);
-  log('social coffee beans clickable', found.length >= 2 && opened.length >= 2,
-    `beans=${found.join(',')} | opened=${opened.length}`);
-  opened.forEach((u) => console.log('  -> ' + u));
-
-  // Console errors
   log('no console errors', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' || '));
 
   await browser.close();
