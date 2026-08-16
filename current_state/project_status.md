@@ -4,7 +4,22 @@
 > Chosen concept: C (First Spoon). Source of truth: src/ (main.ts, interaction.ts, style.css, index.html, config.ts)
 
 ## Current phase
-Mobile interaction fix + carousel/social polish (owner feedback 2026-08-16) — DONE.
+DEPLOYED to production (Vercel): https://ntelementcakes.vercel.app
+
+## Deployment (2026-08-16)
+- Platform: Vercel (free `*.vercel.app` subdomain). Project `ntelementcakes`, scope `monireachtang-6029s-projects`.
+- `vercel.json`: framework vite, `npm run build`, output `dist`, name `ntelementcakes`.
+- Verified live: 200 on page + JS/CSS/logo + all cake images; Playwright against live URL (canvas renders, crack reveals gallery, 11 cards, lightbox opens, 2 social buttons with correct hrefs, no console errors).
+- `.vercel/` gitignored (project link state stays local).
+
+## Recent changes (2026-08-16, round 3)
+- Single-line gallery title (`white-space: nowrap; max-width: none`).
+- Instagram removed (commented out in index.html + config.ts). Socials narrowed to Facebook + Messenger.
+- Facebook URL set to real page; Messenger set to `m.me/61592289277016` (owner to confirm).
+- Carousel image order shuffled each load (Fisher-Yates `galleryOrder`); carousel + lightbox share the order.
+- Right-edge fade on carousel hints at more images; hides at scroll end.
+- FIXED regression: wrapping `#card-arc` in `.carousel` ballooned the gallery grid track to content width (~2000px), killing carousel scroll AND pushing the centered social bar off-screen. Fixed with `grid-template-columns: minmax(0,1fr)` + `.carousel { min-width:0; max-width:100% }`.
+- Hardened `test:mobile` to assert carousel scrollability + social-button viewport bounds (old `isVisible()` check passed while buttons were off-screen).
 
 ## Recent changes (2026-08-16, round 2)
 
