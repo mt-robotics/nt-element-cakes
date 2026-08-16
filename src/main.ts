@@ -41,16 +41,42 @@ type DragState = { active: boolean; startX: number; moved: boolean; rotation: nu
 
 let lightboxIndex = -1;
 
-// Shuffled gallery order so each visit shows cakes in a fresh sequence.
-// Both the carousel and the lightbox read from this same array, so indices stay consistent.
-const galleryOrder = (() => {
-  const a = [...config.cakeImages];
+// // Shuffled gallery order so each visit shows cakes in a fresh sequence.
+// // Both the carousel and the lightbox read from this same array, so indices stay consistent.
+// const galleryOrder = (() => {
+//   const a = [...config.cakeImages];
+//   for (let i = a.length - 1; i > 0; i -= 1) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [a[i], a[j]] = [a[j], a[i]];
+//   }
+//   return a;
+// })();
+
+type GalleryImage = { thumb: string; full: string };
+
+async function fetchGalleryImages(): Promise<GalleryImage[]> {
+  try {
+    const res = await fetch('/api/list-images');
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const data = (await res.json()) as GalleryImage[];
+    if (Array.isArray(data) && data.length > 0) return data;
+    throw new Error('empty');
+  } catch {
+    // Fallback to bundled local images if the function is down.
+    return config.cakeImages.map((src) => ({ thumb: src, full: src }));
+  }
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
   for (let i = a.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
-})();
+}
+
+let galleryOrder: GalleryImage[] = [];
 
 const carouselFade = document.querySelector<HTMLElement>('.carousel-fade');
 
@@ -63,7 +89,7 @@ function updateCarouselFade() {
 function makeGallery() {
   if (!cardArc) return;
   cardArc.innerHTML = '';
-  galleryOrder.forEach((src, i) => {
+  galleryOrder.forEach((img, i) => {
     const card = document.createElement('article');
     card.className = 'cake-card';
     card.tabIndex = 0;
@@ -71,7 +97,7 @@ function makeGallery() {
     card.setAttribute('aria-label', `View cake ${i + 1} up close`);
     card.style.setProperty('--i', String(i));
     card.style.setProperty('--total', String(galleryOrder.length));
-    card.innerHTML = `<div class="cake-card__inner"><img src="${src}" alt="NT Element Cakes gallery cake ${i + 1}" draggable="false"/></div>`;
+    card.innerHTML = `<div class="cake-card__inner"><img src="${img.thumb}" alt="NT Element Cakes gallery cake ${i + 1}" draggable="false"/></div>`;
     const state: DragState = { active: false, startX: 0, moved: false, rotation: -10 + i * 2 };
     const inner = card.querySelector<HTMLElement>('.cake-card__inner')!;
     const paint = () => {
@@ -110,7 +136,7 @@ function makeGallery() {
 function openLightbox(i: number) {
   if (!lightbox || !lightboxImg) return;
   lightboxIndex = i;
-  lightboxImg.src = galleryOrder[i];
+  lightboxImg.src = galleryOrder[i].full;
   lightboxImg.alt = `NT Element Cakes cake ${i + 1}`;
   lightbox.setAttribute('aria-hidden', 'false');
   lightbox.classList.add('is-open');
@@ -155,8 +181,11 @@ cardArc?.addEventListener('wheel', (event) => {
 cardArc?.addEventListener('scroll', () => updateCarouselFade(), { passive: true });
 window.addEventListener('resize', () => updateCarouselFade());
 
-makeGallery();
-updateCarouselFade();
+fetchGalleryImages().then((imgs) => {
+  galleryOrder = shuffle(imgs);
+  makeGallery();
+  updateCarouselFade();
+})
 
 const rig = createScene(canvas);
 const tiramisu = createTiramisu();
