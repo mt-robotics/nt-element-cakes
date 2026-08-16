@@ -4,53 +4,60 @@
 > Chosen concept: C (First Spoon). Source of truth: src/ (main.ts, interaction.ts, style.css, index.html, config.ts)
 
 ## Current phase
-Post-crack UX polish + mobile redesign, from owner feedback on 2026-08-16.
+Post-crack UX polish + mobile redesign (owner feedback 2026-08-16) — DONE.
 
-## Open tasks (priority order)
+## Task log
 
-### T1 — Brand name too big + wraps to two lines
-- `h1 { max-width: 10ch }` forces "NT Element Cakes" (16 chars) to wrap.
-- Make smaller and force single line.
+### T1 — Brand name too big + wraps to two lines — DONE
+- `h1` had `max-width: 10ch` forcing "NT Element Cakes" (16 chars) to wrap.
+- Removed max-width, added `white-space: nowrap`, reduced size to `clamp(1.05rem, 1.8vw, 1.7rem)`.
+- Verified single-line (smoke test asserts height ≤ 1 line).
 
-### T2 — Simplify left-column / gallery copy (cluttered)
-- "Cracked open" eyebrow + "The gallery beneath the cocoa" h2 + about paragraph = 3 stacked texts, cluttered.
-- Replace with a single clean heading + short on-brand line.
+### T2 — Simplify gallery copy — DONE
+- Removed "Cracked open" eyebrow + "The gallery beneath the cocoa" h2.
+- Replaced with single heading "Choose your slice" + short on-brand line.
+- Tagline changed "Darwin-made…" → "Made in Australia." (owner to override in .env).
 
-### T3 — Spoon is annoying after crack
-- After crack, spoon keeps following the mouse in 3D while the DOM gallery is on top; `#scene { cursor:none }` hides the real cursor.
-- Fix: fade spoon out / idle after crack, restore normal cursor over the page.
+### T3 — Spoon annoying after crack — DONE
+- After crack, spoon sinks then fades to scale 0.001 (retires).
+- `#scene` cursor returns to normal; interactive elements get a themed cocoa-circle cursor via `body.is-cracked`.
+- Reset restores the spoon.
 
-### T4 — Replace coffee-bean social links
-- Beans are unidentifiable and hard to click (confirmed UX failure).
-- Replace with a clearly-labeled social bar (Instagram / Facebook / Messenger) with recognizable icons.
+### T4 — Replace coffee-bean social links — DONE
+- Removed bean raycast/click/hover logic entirely (interaction.ts, tiramisu.ts).
+- Beans remain as decorative 3D objects only (no interaction).
+- Added `.social-bar` with 3 labeled buttons (Instagram / Facebook / Messenger) + inline SVG icons, wired from config socials.
 
-### T5 — Card click opens lightbox; drop "Spin me"
-- "Spin me" label implies an action but clicking does nothing (only drag-tilt).
-- Fix: click/tap opens full-size lightbox with prev/next + close + keyboard (Esc/arrows).
+### T5 — Card click lightbox + drop "Spin me" — DONE
+- "Spin me" label removed. Cards keep subtle drag-tilt.
+- Click/tap (with 4px drag threshold) opens full-size lightbox: prev/next, close, Esc/arrow keys, backdrop click, `role=dialog`.
 
-### T6 — Carousel auto-advance
-- Cards sit static in a horizontal scroll. Add gentle auto-advance (marquee), pause on hover/drag.
+### T6 — Carousel auto-advance — DONE
+- Gentle marquee (`scrollLeft += dt * 0.03`), wraps at end, pauses on hover.
 
-### T7 — Mobile redesign (separate layout, not squeezed desktop)
-- White text unreadable against cream/white cake (low contrast).
-- Top row clutter: logo + "THE FIRST SPOON" + "NT Element Cakes" + "Reset spoon" fighting.
-- Add dark scrim/backgrounds for text contrast; declutter top; stack properly; ensure no content clipping from `overflow:hidden`.
+### T7 — Mobile redesign — DONE
+- Eyebrow hidden on mobile; brand title forced single-line + smaller.
+- Reset button tucked top-right, smaller.
+- Copy panel = full-width bottom sheet with solid dark backing for contrast.
+- Gallery heading wrapped in a dark scrim for contrast over the cake.
+- Social bar + cards sized for portrait; no horizontal page overflow (verified).
 
-### T8 — Dead copy cleanup
-- Hint text "order via the floating coffee beans" → update.
-- social-label "Hover a coffee bean to order" → remove/replace.
-- Reset button label → "Reset".
+### T8 — Dead copy cleanup — DONE
+- Hint text "order via the floating coffee beans" → "Move to orbit · click the top to crack".
+- Removed `#social-label`.
+- Reset button label → "↺ Reset".
 
-### T9 — Accessibility + copy flags
-- Gallery cards: keyboard activation (Enter/Space) + role.
-- Confirm tagline city ("Darwin-made" vs "Made in Australia") — owner to set in .env.
-
-## Recently completed
-- [x] Concept C promoted to main (archive/concept-{a,b,c} tags preserved)
-- [x] Click-blocking fixes (canvas pointer-events, per-layer gating, spoon responsiveness)
-- [x] Favicon added
-- [x] Playwright smoke test (tests/smoke.cjs, `npm run test:smoke`)
+### T9 — Accessibility + copy flags — DONE
+- Cards: `role=button`, `tabIndex=0`, Enter/Space activation, aria-labels.
+- Tagline city flagged: "Made in Australia." placeholder — owner sets VITE_TAGLINE in .env.
 
 ## Verification
-- `npm run build` (tsc + vite) must pass after every task.
-- `npm run test:smoke` (with dev server up) must pass.
+- `npx tsc --noEmit` clean.
+- `npm run build` passes.
+- `npm run test:smoke` — 17/17 pass (desktop).
+- `npm run test:mobile` — passes (390×844 portrait, no overflow, lightbox + social bar work).
+
+## Open questions for owner
+1. Confirm tagline + about copy (currently placeholders in config.ts / .env.example).
+2. Confirm social URLs (placeholders `ntelementcakes` handles).
+3. Do you want the decorative beans kept, or removed entirely? (They're currently non-interactive ambience.)
