@@ -14,7 +14,7 @@ export const config: SiteConfig = {
   brandName: env.VITE_BRAND_NAME || 'NT Element Cakes',
   tagline:
     env.VITE_TAGLINE ||
-    'Made in Australia.',
+    'Handmade tiramisu, made in Australia.',
   aboutText:
     env.VITE_ABOUT_TEXT ||
     'Small-batch tiramisu, cocoa-dusted and coffee-soaked. Tap any slice to see it up close, then order on your favourite app.',

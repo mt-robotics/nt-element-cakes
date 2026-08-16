@@ -124,25 +124,15 @@ window.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowRight') stepLightbox(1);
 });
 
-// Carousel auto-advance (marquee) — pause on hover/drag.
-let marqueeRaf = 0;
-let lastMarquee = performance.now();
-function marqueeLoop(now: number) {
-  if (cardArc && !cardArc.matches(':hover')) {
-    const dt = now - lastMarquee;
-    if (dt > 0) {
-      cardArc.scrollLeft += dt * 0.03;
-      if (cardArc.scrollLeft >= cardArc.scrollWidth - cardArc.clientWidth - 1) {
-        cardArc.scrollLeft = 0;
-      }
-    }
+// Carousel: smooth wheel-driven horizontal scroll (desktop), no auto-advance.
+cardArc?.addEventListener('wheel', (event) => {
+  if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+    event.preventDefault();
+    cardArc.scrollLeft += event.deltaY;
   }
-  lastMarquee = now;
-  marqueeRaf = requestAnimationFrame(marqueeLoop);
-}
+}, { passive: false });
 
 makeGallery();
-marqueeRaf = requestAnimationFrame(marqueeLoop);
 
 const rig = createScene(canvas);
 const tiramisu = createTiramisu();

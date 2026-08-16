@@ -155,6 +155,7 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
 }
 
 .hint { font-size: .82rem; margin-bottom: 0; }
+.hint-mobile { display: none; }
 
 .gallery {
   position: fixed;
@@ -186,12 +187,14 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   display: flex;
   gap: clamp(.7rem, 1.6vw, 1.15rem);
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: hidden;
   padding: 1rem .2rem 1.4rem;
   perspective: 1000px;
-  scrollbar-width: thin;
-  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
 }
+.card-arc::-webkit-scrollbar { display: none; }
 
 .cake-card {
   flex: 0 0 clamp(150px, 18vw, 240px);
@@ -223,6 +226,10 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   flex-wrap: wrap;
   justify-content: center;
   gap: .6rem;
+  padding: .75rem 1rem;
+  border-radius: 22px;
+  background: rgba(20, 10, 6, .6);
+  backdrop-filter: blur(14px);
 }
 .social-btn {
   display: inline-flex;
@@ -230,15 +237,21 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   gap: .5rem;
   padding: .7rem 1.1rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 249, 239, .18);
-  background: rgba(255, 249, 239, .1);
+  border: 1px solid rgba(255, 249, 239, .28);
+  background: rgba(44, 24, 16, .72);
   color: var(--color-cream);
   font-weight: 700;
   text-decoration: none;
   backdrop-filter: blur(14px);
-  transition: transform .2s ease, background .2s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
-.social-btn:hover { transform: translateY(-3px); background: rgba(255, 249, 239, .2); }
+.social-btn:hover,
+.social-btn:focus-visible {
+  transform: translateY(-3px);
+  background: var(--color-coffee);
+  border-color: rgba(255, 249, 239, .55);
+}
 .social-btn svg { width: 20px; height: 20px; flex: 0 0 auto; }
 
 /* Lightbox */
@@ -338,7 +351,8 @@ body.lightbox-open { overflow: hidden; }
     border-radius: 22px;
     background: rgba(44, 24, 16, .78);
   }
-  .copy-panel .hint { display: none; }
+  .copy-panel .hint-desktop { display: none; }
+  .copy-panel .hint-mobile { display: block; }
 
   /* Gallery: roomier top so the heading + cards clear the cake. */
   .gallery {

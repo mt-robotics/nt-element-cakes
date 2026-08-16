@@ -24,6 +24,7 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
   let cracked = false;
   let dragging = false;
   let lastX = 0;
+  const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
   function setPointer(event: PointerEvent) {
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -65,7 +66,7 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
 
   window.addEventListener('pointermove', (event) => {
     setPointer(event);
-    if (dragging) {
+    if (!isTouch && dragging) {
       tiramisu.group.rotation.y += (event.clientX - lastX) * 0.007;
       lastX = event.clientX;
     }
@@ -82,26 +83,38 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
     const target = event.target as HTMLElement | null;
     if (target && target.closest('button, a, .cake-card, .copy-panel, .gallery')) return;
 
+    // On touch, tap anywhere on the cake cracks it (no cursor chase).
+    if (isTouch) {
+      crack();
+      return;
+    }
+
     raycaster.setFromCamera(pointer, rig.camera);
     const topHit = raycaster.intersectObject(tiramisu.cocoaTop, false)[0];
     if (topHit || !cracked) crack();
   });
 
   const update = (delta: number) => {
-    if (!cracked) {
-      raycaster.setFromCamera(targetPointer, rig.camera);
-      if (raycaster.ray.intersectPlane(plane, hit)) {
-        hit.x = THREE.MathUtils.clamp(hit.x, -3.4, 3.4);
-        hit.z = THREE.MathUtils.clamp(hit.z, -2.6, 3.4);
-        tiramisu.spoon.position.lerp(hit, 0.55);
-        const dx = tiramisu.spoon.position.x - previous.x;
-        const dz = tiramisu.spoon.position.z - previous.z;
-        tiramisu.spoon.rotation.z = THREE.MathUtils.lerp(tiramisu.spoon.rotation.z, 0.35 - dx * 1.4, 0.4);
-        tiramisu.spoon.rotation.x = THREE.MathUtils.lerp(tiramisu.spoon.rotation.x, -0.85 + dz * 1.1, 0.4);
-        previous.copy(tiramisu.spoon.position);
-      }
-      if (!dragging) tiramisu.group.rotation.y += delta * 0.12;
+    if (cracked) return;
+
+    // On touch, the cake gently self-rotates; no spoon chasing.
+    if (isTouch) {
+      tiramisu.group.rotation.y += delta * 0.12;
+      return;
     }
+
+    raycaster.setFromCamera(targetPointer, rig.camera);
+    if (raycaster.ray.intersectPlane(plane, hit)) {
+      hit.x = THREE.MathUtils.clamp(hit.x, -3.4, 3.4);
+      hit.z = THREE.MathUtils.clamp(hit.z, -2.6, 3.4);
+      tiramisu.spoon.position.lerp(hit, 0.55);
+      const dx = tiramisu.spoon.position.x - previous.x;
+      const dz = tiramisu.spoon.position.z - previous.z;
+      tiramisu.spoon.rotation.z = THREE.MathUtils.lerp(tiramisu.spoon.rotation.z, 0.35 - dx * 1.4, 0.4);
+      tiramisu.spoon.rotation.x = THREE.MathUtils.lerp(tiramisu.spoon.rotation.x, -0.85 + dz * 1.1, 0.4);
+      previous.copy(tiramisu.spoon.position);
+    }
+    if (!dragging) tiramisu.group.rotation.y += delta * 0.12;
   };
 
   const reset = () => {
