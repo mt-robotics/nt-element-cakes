@@ -36,12 +36,12 @@ button, a, .cake-card { cursor: pointer; }
   cursor: none;
 }
 
-/* After crack, the spoon is gone — show a themed tiramisu cursor. */
+/* After crack, the spoon is gone — show a cake-spatula cursor. */
 body.is-cracked #scene { cursor: auto; }
 body.is-cracked button,
 body.is-cracked a,
 body.is-cracked .cake-card {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 24 24'><circle cx='12' cy='12' r='9' fill='%23d4ad80' stroke='%232c1810' stroke-width='1.5'/><circle cx='12' cy='12' r='3' fill='%23fff9ef'/></svg>") 12 12, pointer;
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M4 6 L26 26 L26 20 L12 4 Z' fill='%23c9cdd2' stroke='%232c1810' stroke-width='1.5' stroke-linejoin='round'/><path d='M26 26 L21 24 L24 20 Z' fill='%238b6245' stroke='%232c1810' stroke-width='1.5' stroke-linejoin='round'/></svg>") 10 8, pointer;
 }
 
 .loading {
@@ -226,10 +226,6 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   flex-wrap: wrap;
   justify-content: center;
   gap: .6rem;
-  padding: .75rem 1rem;
-  border-radius: 22px;
-  background: rgba(20, 10, 6, .6);
-  backdrop-filter: blur(14px);
 }
 .social-btn {
   display: inline-flex;
@@ -238,11 +234,10 @@ h2 { font-size: clamp(2.1rem, 5vw, 5rem); max-width: 11ch; }
   padding: .7rem 1.1rem;
   border-radius: 999px;
   border: 1px solid rgba(255, 249, 239, .28);
-  background: rgba(44, 24, 16, .72);
+  background: var(--color-espresso);
   color: var(--color-cream);
   font-weight: 700;
   text-decoration: none;
-  backdrop-filter: blur(14px);
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
   transition: transform .2s ease, background .2s ease, border-color .2s ease;
 }
@@ -330,7 +325,7 @@ body.lightbox-open { overflow: hidden; }
     align-items: center;
   }
   .brand-mark { width: 46px; height: 46px; }
-  .eyebrow { display: none; }
+  .eyebrow { font-size: .48rem; letter-spacing: .12em; margin-bottom: .15rem; }
   h1 { font-size: 1rem; white-space: nowrap; }
 
   /* Reset button: smaller, tucked top-right without fighting the brand. */

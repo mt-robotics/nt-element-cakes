@@ -26,10 +26,30 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
   let lastX = 0;
   const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
+  // Touch hold-to-drag tracking: a clean tap cracks, but tap-and-hold lets the
+  // spoon follow the finger (like moving a mouse without clicking).
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchDragging = false;
+
   function setPointer(event: PointerEvent) {
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
     targetPointer.copy(pointer);
+  }
+
+  function updateSpoon() {
+    raycaster.setFromCamera(targetPointer, rig.camera);
+    if (raycaster.ray.intersectPlane(plane, hit)) {
+      hit.x = THREE.MathUtils.clamp(hit.x, -3.4, 3.4);
+      hit.z = THREE.MathUtils.clamp(hit.z, -2.6, 3.4);
+      tiramisu.spoon.position.lerp(hit, 0.55);
+      const dx = tiramisu.spoon.position.x - previous.x;
+      const dz = tiramisu.spoon.position.z - previous.z;
+      tiramisu.spoon.rotation.z = THREE.MathUtils.lerp(tiramisu.spoon.rotation.z, 0.35 - dx * 1.4, 0.4);
+      tiramisu.spoon.rotation.x = THREE.MathUtils.lerp(tiramisu.spoon.rotation.x, -0.85 + dz * 1.1, 0.4);
+      previous.copy(tiramisu.spoon.position);
+    }
   }
 
   function crack() {
@@ -66,7 +86,11 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
 
   window.addEventListener('pointermove', (event) => {
     setPointer(event);
-    if (!isTouch && dragging) {
+    if (isTouch) {
+      const dx = event.clientX - touchStartX;
+      const dy = event.clientY - touchStartY;
+      if (Math.hypot(dx, dy) > 6) touchDragging = true;
+    } else if (dragging) {
       tiramisu.group.rotation.y += (event.clientX - lastX) * 0.007;
       lastX = event.clientX;
     }
@@ -74,20 +98,31 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
 
   window.addEventListener('pointerdown', (event) => {
     setPointer(event);
-    dragging = true;
-    lastX = event.clientX;
+    if (isTouch) {
+      touchStartX = event.clientX;
+      touchStartY = event.clientY;
+      touchDragging = false;
+    } else {
+      dragging = true;
+      lastX = event.clientX;
+    }
   });
-  window.addEventListener('pointerup', () => (dragging = false));
+
+  window.addEventListener('pointerup', () => {
+    if (isTouch) {
+      // A clean tap (no drag) cracks the cake.
+      if (!touchDragging) crack();
+      touchDragging = false;
+    } else {
+      dragging = false;
+    }
+  });
 
   window.addEventListener('click', (event) => {
+    if (isTouch) return; // touch handled via pointerup tap detection
+
     const target = event.target as HTMLElement | null;
     if (target && target.closest('button, a, .cake-card, .copy-panel, .gallery')) return;
-
-    // On touch, tap anywhere on the cake cracks it (no cursor chase).
-    if (isTouch) {
-      crack();
-      return;
-    }
 
     raycaster.setFromCamera(pointer, rig.camera);
     const topHit = raycaster.intersectObject(tiramisu.cocoaTop, false)[0];
@@ -97,23 +132,14 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
   const update = (delta: number) => {
     if (cracked) return;
 
-    // On touch, the cake gently self-rotates; no spoon chasing.
     if (isTouch) {
-      tiramisu.group.rotation.y += delta * 0.12;
+      // Holding and dragging = spoon follows the finger; otherwise gentle self-rotate.
+      if (touchDragging) updateSpoon();
+      else tiramisu.group.rotation.y += delta * 0.12;
       return;
     }
 
-    raycaster.setFromCamera(targetPointer, rig.camera);
-    if (raycaster.ray.intersectPlane(plane, hit)) {
-      hit.x = THREE.MathUtils.clamp(hit.x, -3.4, 3.4);
-      hit.z = THREE.MathUtils.clamp(hit.z, -2.6, 3.4);
-      tiramisu.spoon.position.lerp(hit, 0.55);
-      const dx = tiramisu.spoon.position.x - previous.x;
-      const dz = tiramisu.spoon.position.z - previous.z;
-      tiramisu.spoon.rotation.z = THREE.MathUtils.lerp(tiramisu.spoon.rotation.z, 0.35 - dx * 1.4, 0.4);
-      tiramisu.spoon.rotation.x = THREE.MathUtils.lerp(tiramisu.spoon.rotation.x, -0.85 + dz * 1.1, 0.4);
-      previous.copy(tiramisu.spoon.position);
-    }
+    updateSpoon();
     if (!dragging) tiramisu.group.rotation.y += delta * 0.12;
   };
 
