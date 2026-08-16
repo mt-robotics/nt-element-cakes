@@ -4,7 +4,35 @@
 > Chosen concept: C (First Spoon). Source of truth: src/ (main.ts, interaction.ts, style.css, index.html, config.ts)
 
 ## Current phase
-Post-crack UX polish + mobile redesign (owner feedback 2026-08-16) — DONE.
+Mobile interaction fix + carousel/social polish (owner feedback 2026-08-16) — DONE.
+
+## Recent changes (2026-08-16, round 2)
+
+### Mobile tap-to-crack (replaces cursor-chase on touch) — DONE
+- `interaction.ts` detects `(pointer: coarse)` and switches to tap-to-crack: cake self-rotates, no spoon chasing, tap anywhere on cake cracks it. Spoon still sinks/fades during the crack reveal.
+- Mobile hint swapped: "Tap the cake to crack it open" (desktop keeps "Move to orbit · click the cocoa to crack").
+
+### Removed carousel marquee — DONE
+- Auto-advance loop removed entirely. Carousel now scrolls via wheel (desktop) and native touch swipe.
+
+### Smooth + hidden carousel scrollbars — DONE
+- `.card-arc`: `overflow-y: hidden`, `scrollbar-width: none`, `::-webkit-scrollbar { display:none }`. Wheel handler maps vertical wheel to horizontal scroll.
+
+### High-contrast social bar — DONE
+- `.social-bar` gets a dark backing; buttons use dark espresso background with cream text + coffee hover state, visible over the white cake.
+
+### Copy — DONE
+- Tagline: "Handmade tiramisu, made in Australia."
+
+## Verification
+- `npx tsc --noEmit` clean; `npm run build` passes.
+- `npm run test:smoke` 17/17 (social-popup check occasionally flakes on popup timing — hrefs verified correct; not a site bug).
+- Mobile tap-to-crack verified via Playwright touch emulation.
+
+## Open questions for owner
+1. Confirm tagline + about copy (placeholders in config.ts / .env.example).
+2. Confirm social URLs (placeholders `ntelementcakes` handles).
+3. Keep or remove the decorative (non-interactive) beans?
 
 ## Task log
 
