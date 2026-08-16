@@ -157,3 +157,13 @@ VITE_MESSENGER_URL=https://m.me/ntelementcakes
 - Tried `vercel git connect` first: app installed on mt-robotics + repo selected, but CLI returned 400 "need admin/write access" repeatedly. Root cause (diagnosed via Vercel API): account-level GitHub OAuth did not grant mt-robotics org access; only fixable in dashboard.
 - Pivoted to GitHub Actions (`gh secret set` + `.github/workflows/deploy.yml`) — fully `gh`-driven, transparent YAML, works immediately. Trade-off: Vercel login token stored as a repo secret (couldn't mint a scoped token: `vercel tokens add` returned 403 "Cannot create tokens for this app").
 - If org OAuth access is granted later, can revisit native integration (PR previews come free there).
+
+### D-015 — Staging via Preview environment + alias (not a Pro "custom environment") (2026-08-16)
+- Wanted a stable staging URL. Custom environments are Pro-only ($50/5); account is on Hobby. Built instead: `development` branch → `vercel deploy` (Preview) + `vercel alias` to `ntelementcakes-staging.vercel.app`.
+- Pitfalls hit: `vercel alias` rejects `--yes`; `*.ntelementcakes.vercel.app` subdomains are "reserved for another account" (only `*.vercel.app` and `*.monireachtang-6029s-projects.vercel.app` aliasable); Preview Deployment Protection (SSO) is ON by default → had to disable for Preview.
+- `development` branch doubles as the pre-production branch (no separate `staging` branch — would be redundant).
+
+### D-016 — Cloudinary: list-all-except-samples (not a folder filter) (2026-08-16)
+- Started with `prefix=cakes/` but the owner's photos live at the Cloudinary ROOT (folder "move" never renamed public_ids). Folder filter returned `[]` twice.
+- Final: list all uploads, filter out `samples/` (Cloudinary's bundled 47 demo images). Zero reorganization; add/delete photos at root and they appear.
+- Trade-off: any future non-cake image uploaded to the account root will show on the site. If the account later needs a real folder, the move must physically rename public_id (drag onto the folder in the left sidebar).
