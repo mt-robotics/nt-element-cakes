@@ -8,11 +8,10 @@ export default async function handler(req, res) {
   const [, key, secret, cloud] = m;
 
   const auth = Buffer.from(`${key}:${secret}`).toString('base64');
-  // Only list the "cakes" folder — the owner uploads cake photos there.
-  // (This also keeps Cloudinary's bundled "samples" out automatically.)
+  // List all uploads, then filter out Cloudinary's bundled "samples".
   const apiUrl =
     `https://api.cloudinary.com/v1_1/${cloud}/resources/image` +
-    `?type=upload&prefix=cakes%2F&max_results=500`;
+    `?type=upload&max_results=500`;
 
   const upstream = await fetch(apiUrl, {
     headers: { Authorization: `Basic ${auth}` },
@@ -22,11 +21,15 @@ export default async function handler(req, res) {
   }
   const data = await upstream.json();
 
-  const images = (data.resources || []).map((img) => ({
-    id: img.public_id,
-    thumb: `https://res.cloudinary.com/${cloud}/image/upload/c_scale,w_400,q_auto/${img.public_id}`,
-    full: img.secure_url,
-  }));
+  // Exclude Cloudinary's bundled "samples" folder (demo content every new
+  // account ships with). Everything else is the owner's cake photos.
+  const images = (data.resources || [])
+    .filter((img) => !img.public_id.startsWith('samples/'))
+    .map((img) => ({
+      id: img.public_id,
+      thumb: `https://res.cloudinary.com/${cloud}/image/upload/c_scale,w_400,q_auto/${img.public_id}`,
+      full: img.secure_url,
+    }));
 
   res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
   res.status(200).json(images);
