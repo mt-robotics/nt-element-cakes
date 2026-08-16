@@ -1,4 +1,4 @@
-export type SocialPlatform = 'Instagram' | 'Facebook' | 'Messenger';
+export type SocialPlatform = 'Facebook' | 'Messenger';
 
 export interface SiteConfig {
   brandName: string;
@@ -19,19 +19,15 @@ export const config: SiteConfig = {
     env.VITE_ABOUT_TEXT ||
     'Small-batch tiramisu, cocoa-dusted and coffee-soaked. Tap any slice to see it up close, then order on your favourite app.',
   socials: [
-    {
-      platform: 'Instagram',
-      url: env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/ntelementcakes/',
-      color: '#E9B8CF'
-    },
+    // Instagram temporarily disabled.
     {
       platform: 'Facebook',
-      url: env.VITE_FACEBOOK_URL || 'https://www.facebook.com/ntelementcakes/',
+      url: env.VITE_FACEBOOK_URL || 'https://www.facebook.com/profile.php?id=61592289277016',
       color: '#9EC5FF'
     },
     {
       platform: 'Messenger',
-      url: env.VITE_MESSENGER_URL || 'https://m.me/ntelementcakes',
+      url: env.VITE_MESSENGER_URL || 'https://m.me/61592289277016',
       color: '#B9F2FF'
     }
   ],

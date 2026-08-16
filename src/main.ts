@@ -41,17 +41,36 @@ type DragState = { active: boolean; startX: number; moved: boolean; rotation: nu
 
 let lightboxIndex = -1;
 
+// Shuffled gallery order so each visit shows cakes in a fresh sequence.
+// Both the carousel and the lightbox read from this same array, so indices stay consistent.
+const galleryOrder = (() => {
+  const a = [...config.cakeImages];
+  for (let i = a.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+})();
+
+const carouselFade = document.querySelector<HTMLElement>('.carousel-fade');
+
+function updateCarouselFade() {
+  if (!cardArc || !carouselFade) return;
+  const atEnd = cardArc.scrollLeft + cardArc.clientWidth >= cardArc.scrollWidth - 4;
+  carouselFade.classList.toggle('is-end', atEnd);
+}
+
 function makeGallery() {
   if (!cardArc) return;
   cardArc.innerHTML = '';
-  config.cakeImages.forEach((src, i) => {
+  galleryOrder.forEach((src, i) => {
     const card = document.createElement('article');
     card.className = 'cake-card';
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `View cake ${i + 1} up close`);
     card.style.setProperty('--i', String(i));
-    card.style.setProperty('--total', String(config.cakeImages.length));
+    card.style.setProperty('--total', String(galleryOrder.length));
     card.innerHTML = `<div class="cake-card__inner"><img src="${src}" alt="NT Element Cakes gallery cake ${i + 1}" draggable="false"/></div>`;
     const state: DragState = { active: false, startX: 0, moved: false, rotation: -10 + i * 2 };
     const inner = card.querySelector<HTMLElement>('.cake-card__inner')!;
@@ -91,7 +110,7 @@ function makeGallery() {
 function openLightbox(i: number) {
   if (!lightbox || !lightboxImg) return;
   lightboxIndex = i;
-  lightboxImg.src = config.cakeImages[i];
+  lightboxImg.src = galleryOrder[i];
   lightboxImg.alt = `NT Element Cakes cake ${i + 1}`;
   lightbox.setAttribute('aria-hidden', 'false');
   lightbox.classList.add('is-open');
@@ -107,7 +126,7 @@ function closeLightbox() {
 
 function stepLightbox(dir: number) {
   if (lightboxIndex < 0) return;
-  const n = config.cakeImages.length;
+  const n = galleryOrder.length;
   openLightbox((lightboxIndex + dir + n) % n);
 }
 
@@ -132,7 +151,12 @@ cardArc?.addEventListener('wheel', (event) => {
   }
 }, { passive: false });
 
+// Update the right-edge fade as the carousel scrolls (hints at more images).
+cardArc?.addEventListener('scroll', () => updateCarouselFade(), { passive: true });
+window.addEventListener('resize', () => updateCarouselFade());
+
 makeGallery();
+updateCarouselFade();
 
 const rig = createScene(canvas);
 const tiramisu = createTiramisu();

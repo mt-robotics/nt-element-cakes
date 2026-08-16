@@ -181,7 +181,7 @@ h2 { font-size: clamp(2rem, 3.5vw, 3.4rem); max-width: 11ch; }
   background: rgba(44, 24, 16, .45);
   backdrop-filter: blur(12px);
 }
-.gallery-copy h2 { text-shadow: 0 12px 42px rgba(0,0,0,.45); }
+.gallery-copy h2 { white-space: nowrap; max-width: none; text-shadow: 0 12px 42px rgba(0,0,0,.45); }
 .gallery-copy p { max-width: 580px; color: rgba(255,249,239,.85); line-height: 1.5; margin-bottom: 0; }
 
 .card-arc {
@@ -196,6 +196,20 @@ h2 { font-size: clamp(2rem, 3.5vw, 3.4rem); max-width: 11ch; }
   -webkit-overflow-scrolling: touch;
 }
 .card-arc::-webkit-scrollbar { display: none; }
+
+/* Carousel wrapper: right-edge fade hints at more images; hides at the end. */
+.carousel { position: relative; }
+.carousel-fade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: clamp(40px, 8vw, 90px);
+  pointer-events: none;
+  background: linear-gradient(to left, rgba(44, 24, 16, .55), transparent);
+  transition: opacity .4s ease;
+}
+.carousel-fade.is-end { opacity: 0; }
 
 .cake-card {
   flex: 0 0 clamp(150px, 18vw, 240px);

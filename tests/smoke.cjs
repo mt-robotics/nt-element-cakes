@@ -46,11 +46,11 @@ const log = (name, pass, detail = '') => {
   log('gallery interactive after crack',
     (await page.locator('#gallery').evaluate((el) => getComputedStyle(el).pointerEvents)) === 'auto');
 
-  // Social bar present + clickable (3 buttons)
+  // Social bar present + clickable (2 buttons: Facebook + Messenger; Instagram disabled)
   const socialBtns = page.locator('.social-bar .social-btn');
-  log('social bar has 3 buttons', (await socialBtns.count()) === 3, `${await socialBtns.count()}`);
+  log('social bar has 2 buttons', (await socialBtns.count()) === 2, `${await socialBtns.count()}`);
   const socialLabels = await socialBtns.allTextContents();
-  log('social buttons labeled', socialLabels.some((t) => /instagram/i.test(t)) && socialLabels.some((t) => /facebook/i.test(t)) && socialLabels.some((t) => /messenger/i.test(t)), socialLabels.join(','));
+  log('social buttons labeled', socialLabels.some((t) => /facebook/i.test(t)) && socialLabels.some((t) => /messenger/i.test(t)), socialLabels.join(','));
 
   // Reset button
   const reset = page.locator('#reset');
@@ -75,7 +75,7 @@ const log = (name, pass, detail = '') => {
   const socialHrefs = await socialBtns.evaluateAll((els) => els.map((e) => e.href));
   log('social hrefs wired', socialHrefs.every((h) => h && h !== 'about:blank'), socialHrefs.join(' | '));
   await socialBtns.first().click();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(2500);
   log('social button opens popup', popups.length >= 1, popups.join(','));
 
   // Reset hides gallery
