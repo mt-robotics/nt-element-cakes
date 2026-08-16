@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#2C1810" />
+    <title>NT Element Cakes — The First Spoon</title>
+  </head>
+  <body>
+    <div id="loading" class="loading">
+      <div class="loader-bean"></div>
+      <p>Brewing...</p>
+    </div>
+
+    <canvas id="scene"></canvas>
+
+    <header class="brand-shell">
+      <a class="brand-mark" href="/" aria-label="NT Element Cakes home">
+        <img src="/logo.png" alt="NT Element Cakes logo" />
+      </a>
+      <div>
+        <p class="eyebrow">The First Spoon</p>
+        <h1 id="brand-title">NT Element Cakes</h1>
+      </div>
+    </header>
+
+    <main class="copy-panel" id="intro-panel">
+      <p id="tagline">Darwin-made tiramisu cakes.</p>
+      <button id="spoon-cta" class="primary-button">Crack the cocoa</button>
+      <p class="hint">Move to orbit · click the top · order via the floating coffee beans</p>
+    </main>
+
+    <section id="gallery" class="gallery" aria-label="Cake gallery">
+      <div class="gallery-copy">
+        <p class="eyebrow">Cracked open</p>
+        <h2>The gallery beneath the cocoa</h2>
+        <p id="about-text"></p>
+      </div>
+      <div id="card-arc" class="card-arc"></div>
+    </section>
+
+    <nav id="social-label" class="social-label" aria-live="polite">Hover a coffee bean to order</nav>
+    <button id="reset" class="reset-button" aria-label="Reset spoon interaction">↺ Reset spoon</button>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
