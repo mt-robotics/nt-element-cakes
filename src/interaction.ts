@@ -118,6 +118,11 @@ export function createInteraction(rig: SceneRig, tiramisu: TiramisuModel, option
     }
   });
 
+  window.addEventListener('pointercancel', () => {
+    dragging = false;
+    touchDragging = false;
+  });
+
   window.addEventListener('click', (event) => {
     if (isTouch) return; // touch handled via pointerup tap detection
 
