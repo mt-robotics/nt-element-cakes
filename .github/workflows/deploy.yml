@@ -29,7 +29,7 @@ jobs:
             echo "==> PRODUCTION: ntelementcakes.vercel.app"
             npx vercel@latest deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
           else
-            echo "==> STAGING: preview deploy, then alias to staging.ntelementcakes.vercel.app"
+            echo "==> STAGING: preview deploy, then alias to ntelementcakes-staging.vercel.app"
             npx vercel@latest deploy --yes --token=${{ secrets.VERCEL_TOKEN }} > /tmp/deploy.log 2>&1
             cat /tmp/deploy.log
             URL=$(grep -oE 'https://ntelementcakes-[a-z0-9]+-[a-z0-9-]+\.vercel\.app' /tmp/deploy.log | head -1)
@@ -37,8 +37,8 @@ jobs:
               echo "::error::Could not extract preview URL from deploy output"
               exit 1
             fi
-            echo "==> Aliasing $URL -> staging.ntelementcakes.vercel.app"
-            npx vercel@latest alias set "$URL" staging.ntelementcakes.vercel.app --yes --token=${{ secrets.VERCEL_TOKEN }}
+            echo "==> Aliasing $URL -> ntelementcakes-staging.vercel.app"
+            npx vercel@latest alias set "$URL" ntelementcakes-staging.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
           fi
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
