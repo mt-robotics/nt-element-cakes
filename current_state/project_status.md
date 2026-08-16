@@ -8,8 +8,12 @@ DEPLOYED to production (Vercel): https://ntelementcakes.vercel.app
 
 ## Deployment (2026-08-16)
 - Platform: Vercel (free `*.vercel.app` subdomain). Project `ntelementcakes`, scope `monireachtang-6029s-projects`.
+- Live: https://ntelementcakes.vercel.app
 - `vercel.json`: framework vite, `npm run build`, output `dist`, name `ntelementcakes`.
-- Verified live: 200 on page + JS/CSS/logo + all cake images; Playwright against live URL (canvas renders, crack reveals gallery, 11 cards, lightbox opens, 2 social buttons with correct hrefs, no console errors).
+- Auto-deploy: GitHub Actions `.github/workflows/deploy.yml` on push to `main` → `vercel deploy --prod` (remote build). Secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (repo-scoped via `gh secret set`).
+- Repo: github.com/mt-robotics/nt-element-cakes (public).
+- Native Vercel Git integration was NOT used: `vercel git connect` kept returning 400 "need admin/write access" despite app installed + repo selected — root cause = account-level GitHub OAuth didn't grant mt-robotics org access (dashboard-only fix). Pivoted to GitHub Actions.
+- Verified live: 200 on page + JS/CSS/logo + all cake images; Playwright against live URL (canvas renders, crack reveals gallery, 11 cards, lightbox opens, 2 social buttons, no console errors).
 - `.vercel/` gitignored (project link state stays local).
 
 ## Recent changes (2026-08-16, round 3)

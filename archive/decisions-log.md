@@ -152,3 +152,8 @@ VITE_MESSENGER_URL=https://m.me/ntelementcakes
 - [ ] D-007: Curate cake images
 - [ ] D-009: Review color palette
 - [ ] D-010: Review typography (font choice)
+
+### D-014 — Auto-deploy via GitHub Actions instead of Vercel native Git integration (2026-08-16)
+- Tried `vercel git connect` first: app installed on mt-robotics + repo selected, but CLI returned 400 "need admin/write access" repeatedly. Root cause (diagnosed via Vercel API): account-level GitHub OAuth did not grant mt-robotics org access; only fixable in dashboard.
+- Pivoted to GitHub Actions (`gh secret set` + `.github/workflows/deploy.yml`) — fully `gh`-driven, transparent YAML, works immediately. Trade-off: Vercel login token stored as a repo secret (couldn't mint a scoped token: `vercel tokens add` returned 403 "Cannot create tokens for this app").
+- If org OAuth access is granted later, can revisit native integration (PR previews come free there).
