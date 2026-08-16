@@ -117,6 +117,17 @@ VITE_MESSENGER_URL=https://m.me/ntelementcakes
 **Risk:** Symlinks for shared assets can break if the main worktree moves. Each worktree's `.gitignore` excludes symlinked assets.
 **Owner action:** Run `git worktree list` to see all worktrees. Use `git worktree remove` to clean up after picking a winner.
 
+### D-013: Concept C promoted to main (2026-08-09)
+**Decision:** Owner chose Concept C (First Spoon). Concept C's clean files adopted into `main` via `git checkout concept-c -- ...` (avoids merging the 2,674-file node_modules commit). Concepts A and B retained as branches + archive tags.
+**Resulting state:**
+- `main` → Concept C site + shared docs (PRODUCT_SPEC, TECH_STACK, archive, assets)
+- `concept-a`, `concept-b`, `concept-c` → branches preserved
+- `archive/concept-a`, `archive/concept-b`, `archive/concept-c` → tags (immune to branch deletion)
+- concept worktrees removed after tagging
+**Why checkout-not-merge:** concept-c's history contains a commit that tracks `node_modules/` (~2,674 files) and `dist/` because the build subagent never wrote a `.gitignore`. Merging would have polluted main's history permanently. A clean `git checkout -- <paths>` adoption gives the identical working tree with zero junk in history. The `git rm --cached` untracking was blocked by the terminal safety layer (it treats `git rm` as destructive), so the checkout path was used instead.
+**Owner action:** Run `npm install` in `main` once (already done). Verify `npm run dev` works. If you want to revisit A or B: `git checkout archive/concept-a` or `git worktree add ../concept-a archive/concept-a`.
+**Note:** The `main` repo now mixes the shared planning docs (PRODUCT_SPEC.md, TECH_STACK.md, archive/) with the Concept C site code at the root. This is intentional — the docs describe the product, the code IS the product. Consider whether you want the docs in a `docs/` subfolder now that the site is the primary artifact.
+
 ---
 
 ## Uncertainty Summary
