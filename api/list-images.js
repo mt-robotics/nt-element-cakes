@@ -8,11 +8,11 @@ export default async function handler(req, res) {
   const [, key, secret, cloud] = m;
 
   const auth = Buffer.from(`${key}:${secret}`).toString('base64');
-  // List all uploaded images (no folder filter — simplest for a non-dev:
-  // upload a photo anywhere in the Media Library and it shows up).
+  // Only list the "cakes" folder — the owner uploads cake photos there.
+  // (This also keeps Cloudinary's bundled "samples" out automatically.)
   const apiUrl =
     `https://api.cloudinary.com/v1_1/${cloud}/resources/image` +
-    `?type=upload&max_results=500`;
+    `?type=upload&prefix=cakes%2F&max_results=500`;
 
   const upstream = await fetch(apiUrl, {
     headers: { Authorization: `Basic ${auth}` },
